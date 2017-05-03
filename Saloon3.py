@@ -36,6 +36,10 @@ game = {
     "earthquake": False,
     "earthquake_maxtime": 10,
     "earthquake_time": 10,
+
+    "gun1": None,
+    "gun2": None,
+    "gun3": None,
 }
 
 # Создаем классы объектов
@@ -123,6 +127,7 @@ class TMan(TGameObject):
             if self.state == 4:
                 self.img_n = 3
                 print("Выстрелил в игрока")
+                pygame.mixer.Sound.play(game['gun1'])
                 game["hp"] -=10
                 game["earthquake"] = True
                 if game["hp"] <=0:
@@ -256,6 +261,11 @@ game["bullet_img"] = pygame.image.load("data\img\\bullet.png").convert_alpha()
 
 game['font'] = pygame.font.Font(None, 25)
 
+game['gun1'] = pygame.mixer.Sound('data\snd\gun1.wav')
+game['gun2'] = pygame.mixer.Sound('data\snd\gun2.wav')
+game['gun3'] = pygame.mixer.Sound('data\snd\gun3.wav')
+
+
 
 
 def comp():
@@ -275,10 +285,15 @@ def events():
             if e.key == K_ESCAPE:
                 game["flag"] = False
         if e.type == MOUSEBUTTONDOWN:
-            if game['bullets'] > 0:
+            if (game['mouse_xy'][1] >= game['screen'].get_height() - (game['bullet_img'].get_height() + 30)):
+                game['bullets'] = 8
+                pygame.mixer.Sound.play(game['gun3'])
+            elif game['bullets'] > 0:
+                pygame.mixer.Sound.play(game['gun1'])
+
                 game["earthquake"] = True
 
-                game['saloon'].img[0].blit(game["bullet_hole"], game['mouse_xy'])
+                game['saloon'].img[-1].blit(game["bullet_hole"], game['mouse_xy'])
                 print("Выстрел")
                 # Уменьшаем кол-во патронов
                 game['bullets'] -= 1
@@ -310,9 +325,9 @@ def events():
                     print('\t\t %s'%(game["score"]))
                     game["man1"].state = 6
                     # game["man2"].new_window()
+            else:
+                pygame.mixer.Sound.play(game['gun2'])
 
-            if (game['mouse_xy'][1] >= game['screen'].get_height() - (game['bullet_img'].get_height() + 30)):
-                game['bullets'] = 8
 
 def gui(screen):
     global game
